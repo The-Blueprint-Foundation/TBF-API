@@ -1,10 +1,12 @@
+"""Acts as main interface with database, calling and setting data"""
 import os
-
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
-load_dotenv()
+env_loaded_db = load_dotenv()
+if not env_loaded_db:
+    print("***NO ENVIRONMENT VARIABLE LOADED IN DATABASE, ABNORMAL RESULTS MAY FOLLOW***")
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
@@ -27,7 +29,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
     """Fastapi dependency that yields a db session and always closes it"""
-    db = SessionLocal()
+    db : Session = SessionLocal()
     try:
         yield db
     finally:

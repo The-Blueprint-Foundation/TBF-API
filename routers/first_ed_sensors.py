@@ -1,4 +1,6 @@
-"""Contains the SQL queries for sensor retrieval"""
+"""Older version of sensors.py, DEPRECIATED"""
+from typing import Optional
+from warnings import warn
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
@@ -41,19 +43,8 @@ _SENSOR_QUERY = """
 """
 
 
+warn("Deprecated version of row-to-sensor, use sensors._row_to_sensor")
 def _row_to_sensor(row: Row) -> Sensor:
-<<<<<<< HEAD
-=======
-    """Takes row from db and returns Sensor Object data
-
-    Arguments:
-    row SQLalchemy ROW, row of sensor information from database
-
-    Returns:
-    Sensor Class object containing sensor information
-    """
-    sensor_count = row.sensor_count
->>>>>>> ea5a11f (added documentation to python files, will most likely need to rebase)
     return Sensor(
         id=str(row.sensor_id),
         name=row.sensor_name,
@@ -68,46 +59,21 @@ def _row_to_sensor(row: Row) -> Sensor:
     )
 
 
+warn("Deprecated version of list_sensors, use sensors.list_sensors")
 @router.get("", response_model=list[Sensor])
 def list_sensors(
     include_inactive: bool = False,
     db: Session = Depends(get_db),
 ):
-<<<<<<< HEAD
     query = text(_SENSOR_QUERY.format(sensor_filter=""))
-=======
-    """Lists sensors generated,
-
-    Arguments:
-    include_inactive bool : Boolean of whether to include inactive sensors
-    db Session : Session information of database connection
-
-    Returns
-    list[Sensor] : list of all sensor objects
-
-    """
-    query = text(_NEIGHBORHOOD_QUERY.format(neighborhood_filter=""))
->>>>>>> ea5a11f (added documentation to python files, will most likely need to rebase)
     rows = db.execute(query, {"include_inactive": include_inactive}).all()
     return [_row_to_sensor(row) for row in rows]
 
 
-<<<<<<< HEAD
+warn("Deprecated version of get_sensor, use sensors.get_sensor")
 @router.get("/{sensor_id}", response_model=Sensor)
 def get_sensor(sensor_id: str, db: Session = Depends(get_db)):
     """Returns a single sensor by id, regarless of status."""
-=======
-@router.get("/{neighborhood}", response_model=Sensor)
-def get_sensor(neighborhood: str, db: Session = Depends(get_db)):
-    """Gets sensor given particular neighborhood
-
-    Arguments:
-    neighborhood str : Neighborhood filter
-
-    Returns:
-    Sensor: Sensor object retrieved by filter
-    """
->>>>>>> ea5a11f (added documentation to python files, will most likely need to rebase)
     query = text(
         _SENSOR_QUERY.format(sensor_filter="AND s.sensor_id::text = :sensor_id")
     )
