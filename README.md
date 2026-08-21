@@ -31,9 +31,9 @@ Your system will need to have the following programs installed:
 - Python 3.15 or newer ([Installation Page](https://www.python.org/downloads/)), ([Installation Guide](https://wiki.python.org/moin/BeginnersGuide(2f)Download.html))
 - Optional: 
   - A Visual database manager, capable of interfacing with PostgreSQL 
-        - Examples:
-            - Beekeeper Studio ([Website](https://www.beekeeperstudio.io/)), ([Installation Guide](https://docs.beekeeperstudio.io/installation/))
-            - pgAdmin ([Installation Page](https://www.pgadmin.org/download/)), ([Documentation](https://www.pgadmin.org/docs/pgadmin4/9.17/index.html))
+Examples:
+    - Beekeeper Studio ([Website](https://www.beekeeperstudio.io/)), ([Installation Guide](https://docs.beekeeperstudio.io/installation/))
+    - pgAdmin ([Installation Page](https://www.pgadmin.org/download/)), ([Documentation](https://www.pgadmin.org/docs/pgadmin4/9.17/index.html))
 
 ## Connection to Hosted Database
 
@@ -52,7 +52,6 @@ Check with your particular OS's package manager for installation status.
 For ([Windows](https://www.pgadmin.org/download/pgadmin-4-windows/)) and ([MacOS](https://www.pgadmin.org/download/pgadmin-4-macos/)) installations, follow their respective installation pages for the latest versions and follow the installer prompts.
 
 ## Python
-
 
 Almost all distributions of UNIX operating systems come with a version of python installed.
 Check with your particular OS's package manager for installation status.
