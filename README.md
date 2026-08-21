@@ -30,7 +30,7 @@ Your system will need to have the following programs installed:
 - PostgreSQL ([Installation Page](https://www.postgresql.org/download/)), ([Installation Guide](https://www.postgresql.org/docs/current/tutorial-install.html))
 - Python 3.15 or newer ([Installation Page](https://www.python.org/downloads/)), ([Installation Guide](https://wiki.python.org/moin/BeginnersGuide(2f)Download.html))
 - Optional: 
-  - A Visual database manager, capable of interfacing with PostgreSQL 
+  - A Visual database manager, capable of interfacing with PostgreSQL \
 Examples:
     - Beekeeper Studio ([Website](https://www.beekeeperstudio.io/)), ([Installation Guide](https://docs.beekeeperstudio.io/installation/))
     - pgAdmin ([Installation Page](https://www.pgadmin.org/download/)), ([Documentation](https://www.pgadmin.org/docs/pgadmin4/9.17/index.html))
