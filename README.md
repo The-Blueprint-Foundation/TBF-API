@@ -20,7 +20,7 @@ Acts through a process of:
   - [Python](#python)
   - [Beekeeper Studio](#beekeeper-studio)
   - [pgAdmin](#pgadmin)
-    - [Application Deployment](#application-deployment)
+  - [Application Deployment](#application-deployment)
 
 ## Prerequisites
 
@@ -76,7 +76,7 @@ Else build using your particular distribution's package manager, grabbing the so
 For ([Windows](https://www.pgadmin.org/download/pgadmin-4-windows/)) download the latest Installer and follow subsequent onscreen prompts
 For ([MacOS](https://www.pgadmin.org/download/pgadmin-4-macos/)) download the latest Installer, taking note of your particular architecture and if the version of pgAdmin supports it. From there, follow onscreen prompts for installation.
 
-### Application Deployment
+## Application Deployment
 
 Should be an automatic process of hosting and deployment, provided the .env file is updated to include connection information to the managed database
 From there, following the TBF-Infrastructure steps, the host *should* automatically deploy the API to a reachable state.
