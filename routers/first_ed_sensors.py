@@ -1,4 +1,6 @@
+"""Older version of sensors.py, DEPRECIATED"""
 from typing import Optional
+from warnings import warn
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
@@ -41,6 +43,7 @@ _SENSOR_QUERY = """
 """
 
 
+warn("Deprecated version of row-to-sensor, use sensors._row_to_sensor")
 def _row_to_sensor(row: Row) -> Sensor:
     return Sensor(
         id=str(row.sensor_id),
@@ -56,6 +59,7 @@ def _row_to_sensor(row: Row) -> Sensor:
     )
 
 
+warn("Deprecated version of list_sensors, use sensors.list_sensors")
 @router.get("", response_model=list[Sensor])
 def list_sensors(
     include_inactive: bool = False,
@@ -66,6 +70,7 @@ def list_sensors(
     return [_row_to_sensor(row) for row in rows]
 
 
+warn("Deprecated version of get_sensor, use sensors.get_sensor")
 @router.get("/{sensor_id}", response_model=Sensor)
 def get_sensor(sensor_id: str, db: Session = Depends(get_db)):
     """Returns a single sensor by id, regarless of status."""

@@ -1,3 +1,5 @@
+"""Contains the SQL queries for sensor retrieval"""
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.engine import Row
@@ -64,6 +66,14 @@ _NEIGHBORHOOD_QUERY = """
 
 
 def _row_to_sensor(row: Row) -> Sensor:
+    """Takes row from db and returns Sensor Object data
+
+    Arguments:
+    row SQLalchemy ROW, row of sensor information from database
+
+    Returns:
+    Sensor Class object containing sensor information
+    """
     sensor_count = row.sensor_count
     return Sensor(
         id=row.neighborhood,
@@ -84,6 +94,16 @@ def list_sensors(
     include_inactive: bool = False,
     db: Session = Depends(get_db),
 ):
+    """Lists sensors generated,
+
+    Arguments:
+    include_inactive bool : Boolean of whether to include inactive sensors
+    db Session : Session information of database connection
+
+    Returns
+    list[Sensor] : list of all sensor objects
+
+    """
     query = text(_NEIGHBORHOOD_QUERY.format(neighborhood_filter=""))
     rows = db.execute(query, {"include_inactive": include_inactive}).all()
     return [_row_to_sensor(row) for row in rows]
@@ -91,6 +111,14 @@ def list_sensors(
 
 @router.get("/{neighborhood}", response_model=Sensor)
 def get_sensor(neighborhood: str, db: Session = Depends(get_db)):
+    """Gets sensor given particular neighborhood
+
+    Arguments:
+    neighborhood str : Neighborhood filter
+
+    Returns:
+    Sensor: Sensor object retrieved by filter
+    """
     query = text(
         _NEIGHBORHOOD_QUERY.format(
             neighborhood_filter="AND l.neighborhood = :neighborhood"
