@@ -1,5 +1,7 @@
 """Contains the SQL queries for sensor retrieval"""
 
+"""Contains the SQL queries for sensor retrieval"""
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.engine import Row
@@ -11,61 +13,47 @@ from status_map import normalize_status
 
 router = APIRouter(prefix="/sensors", tags=["sensors"])
 
-_NEIGHBORHOOD_QUERY = """
-    WITH recent_readings AS (
-        SELECT
-            s.sensor_id,
-            s.location_id,
-            r.pm2_5,
-            r.pm10,
-            r.temperature,
-            r.humidity
-        FROM air_quality.sensors s
-        JOIN air_quality.sensor_readings r
-            ON r.sensor_id = s.sensor_id
-        WHERE r.recorded_at > now() - INTERVAL '24 hours'
-          AND (:include_inactive OR LOWER(s.status) = 'active')
-    ),
-    neighborhood_avgs AS (
-        SELECT
-            l.neighborhood,
-            AVG(rr.pm2_5) AS pm2_5_avg,
-            AVG(rr.pm10) AS pm10_avg,
-            AVG(rr.temperature) AS temperature_avg,
-            AVG(rr.humidity) AS humidity_avg,
-            AVG(l.latitude) AS lat,
-            AVG(l.longitude) AS lng,
-            COUNT(DISTINCT rr.sensor_id) AS sensor_count
-        FROM recent_readings rr
-        JOIN air_quality.locations l
-            ON l.location_id = rr.location_id
-        WHERE l.neighborhood IS NOT NULL
-        {neighborhood_filter}
-        GROUP BY l.neighborhood
-    )
+_SENSOR_QUERY = """
     SELECT
-        neighborhood,
-        GREATEST(
-            air_quality.pm25_aqi(pm2_5_avg),
-            air_quality.pm10_aqi(pm10_avg)
-        ) AS aqi,
-        air_quality.aqi_category(
-            GREATEST(
-                air_quality.pm25_aqi(pm2_5_avg),
-                air_quality.pm10_aqi(pm10_avg)
-            )
-        ) AS aqi_category,
-        temperature_avg,
-        humidity_avg,
-        lat,
-        lng,
-        sensor_count
-    FROM neighborhood_avgs
-    ORDER BY neighborhood
+        s.sensor_id,
+        s.name AS sensor_name,
+        s.extrnl_source,
+        l.neighborhood,
+        l.latitude,
+        l.longitude,
+        aqi.aqi,
+        aqi.aqi_category,
+        latest.temperature,
+        latest.humidity
+    FROM air_quality.sensors s
+    JOIN air_quality.locations l
+        ON l.location_id = s.location_id
+    LEFT JOIN air_quality.current_sensor_aqi aqi
+        ON aqi.sensor_id = s.sensor_id
+    LEFT JOIN LATERAL (
+        SELECT r.temperature, r.humidity
+        FROM air_quality.sensor_readings r
+        WHERE r.sensor_id = s.sensor_id
+        ORDER BY r.recorded_at DESC
+        LIMIT 1
+    ) latest ON true
+    WHERE (:include_inactive OR LOWER(s.status) = 'active')
+    {sensor_filter}
+    ORDER BY s.name
 """
 
 
 def _row_to_sensor(row: Row) -> Sensor:
+<<<<<<< HEAD
+=======
+    """Takes row from db and returns Sensor Object data
+
+    Arguments:
+    row SQLalchemy ROW, row of sensor information from database
+
+    Returns:
+    Sensor Class object containing sensor information
+    """
     """Takes row from db and returns Sensor Object data
 
     Arguments:
@@ -75,17 +63,18 @@ def _row_to_sensor(row: Row) -> Sensor:
     Sensor Class object containing sensor information
     """
     sensor_count = row.sensor_count
+>>>>>>> ea5a11f (added documentation to python files, will most likely need to rebase)
     return Sensor(
-        id=row.neighborhood,
-        name=row.neighborhood,
-        type=f"{sensor_count} sensor{'s' if sensor_count != 1 else ''}",
+        id=str(row.sensor_id),
+        name=row.sensor_name,
+        type=row.extrnl_source,
         location=row.neighborhood,
         aqi=int(row.aqi) if row.aqi is not None else None,
-        temperature=round(float(row.temperature_avg)) if row.temperature_avg is not None else None,
-        humidity=round(float(row.humidity_avg)) if row.humidity_avg is not None else None,
+        temperature=float(row.temperature) if row.temperature is not None else None,
+        humidity=float(row.humidity) if row.humidity is not None else None,
         status=normalize_status(row.aqi_category),
-        lat=float(row.lat),
-        lng=float(row.lng),
+        lat=float(row.latitude),
+        lng=float(row.longitude),
     )
 
 
@@ -105,10 +94,16 @@ def list_sensors(
 
     """
     query = text(_NEIGHBORHOOD_QUERY.format(neighborhood_filter=""))
+>>>>>>> ea5a11f (added documentation to python files, will most likely need to rebase)
     rows = db.execute(query, {"include_inactive": include_inactive}).all()
     return [_row_to_sensor(row) for row in rows]
 
 
+<<<<<<< HEAD
+@router.get("/{sensor_id}", response_model=Sensor)
+def get_sensor(sensor_id: str, db: Session = Depends(get_db)):
+    """Returns a single sensor by id, regarless of status."""
+=======
 @router.get("/{neighborhood}", response_model=Sensor)
 def get_sensor(neighborhood: str, db: Session = Depends(get_db)):
     """Gets sensor given particular neighborhood
@@ -120,13 +115,11 @@ def get_sensor(neighborhood: str, db: Session = Depends(get_db)):
     Sensor: Sensor object retrieved by filter
     """
     query = text(
-        _NEIGHBORHOOD_QUERY.format(
-            neighborhood_filter="AND l.neighborhood = :neighborhood"
-        )
+        _SENSOR_QUERY.format(sensor_filter="AND s.sensor_id::text = :sensor_id")
     )
     row = db.execute(
-        query, {"include_inactive": True, "neighborhood": neighborhood}
+        query, {"include_inactive": True, "sensor_id": sensor_id}
     ).first()
     if row is None:
-        raise HTTPException(status_code=404, detail="Neighborhood not found")
+        raise HTTPException(status_code=404, detail="Sensor not found")
     return _row_to_sensor(row)

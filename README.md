@@ -1,3 +1,10 @@
+---
+title: API for 'Change is in the Air Project'
+version: "1.0"
+allowed_elements: [img]
+---
+
+
 # The Blueprint Foundation: "Change is in the Air" API
 
 <img src="./docs/img/capstone_architecture_api_focus.drawio.svg" style="width: 90%; max-width: 1250px" alt="Diagram showing architecture for capstone project, with the relevant (API) section outlined">
